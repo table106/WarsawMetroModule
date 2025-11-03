@@ -9,46 +9,6 @@ using System.Collections.Generic;
 [RequireComponent(typeof(KMBombModule), typeof(KMSelectable))]
 public partial class WarsawMetroModule : MonoBehaviour
 {
-    [System.Serializable]
-    public struct Stage1
-    {
-        public GameObject Container;
-        public KMSelectable ButtonTop;
-        public KMSelectable ButtonBottom;
-        public GameObject TimeTop;
-        public GameObject TimeBottom;
-        public GameObject DirectionTextTop;
-        public GameObject DirectionTextBottom;
-        public GameObject DateTimeDisplay;
-        public GameObject TrainSpriteTop;
-        public GameObject TrainSpriteBottom;
-        public GameObject StationName;
-        public GameObject StationBackground;
-        public KMSelectable SwitchLineButton;
-        public GameObject LineSwitchSprite;
-    }
-
-    [System.Serializable]
-    public struct Stage2
-    {
-        public GameObject Container;
-        public GameObject Dots;
-        public KMSelectable LeaveTrainButton;
-    }
-
-    [System.Serializable]
-    public struct Visuals
-    {
-        public Material BlueMaterial;
-        public Material RedMaterial;
-        public Sprite M1Sprite;
-        public Sprite M2Sprite;
-        public Sprite OlderSprite;
-        public Sprite OldSprite;
-        public Sprite CurrentSprite;
-        public Sprite NewSprite;
-    }
-
     enum Line
     {
         M1,
@@ -119,10 +79,34 @@ public partial class WarsawMetroModule : MonoBehaviour
     private string _currentStation;
     private Line _destinationLine;
     private string _destinationStation;
-    [SerializeField] private Stage1 _stage1;
-    [SerializeField] private Stage2 _stage2;
-    [SerializeField] private Visuals _visuals;
-    [SerializeField] private GameObject _solvedContainer;
+    #region References
+    public GameObject Stage1;
+    public KMSelectable ButtonTop;
+    public KMSelectable ButtonBottom;
+    public GameObject TimeTop;
+    public GameObject TimeBottom;
+    public GameObject DirectionTextTop;
+    public GameObject DirectionTextBottom;
+    public GameObject DateTimeDisplay;
+    public GameObject TrainSpriteTop;
+    public GameObject TrainSpriteBottom;
+    public GameObject StationName;
+    public GameObject StationBackground;
+    public KMSelectable SwitchLineButton;
+    public GameObject LineSwitchSprite;
+    public GameObject Stage2;
+    public GameObject Dots;
+    public KMSelectable LeaveTrainButton;
+    public Material BlueMaterial;
+    public Material RedMaterial;
+    public Sprite M1Sprite;
+    public Sprite M2Sprite;
+    public Sprite OlderSprite;
+    public Sprite OldSprite;
+    public Sprite CurrentSprite;
+    public Sprite NewSprite;
+    public GameObject SolvedContainer;
+    #endregion
     #region Stage 1 variables
     private int _trainTypeTop = 0;
     private int _trainTypeBottom = 0;
@@ -143,7 +127,6 @@ public partial class WarsawMetroModule : MonoBehaviour
     private int _nextStationTime;
     private KMAudio.KMAudioRef _ambience;
     private int _dotCount = 1;
-    private int _approxTravelTime;
     #endregion
     #region Coroutines
     private Coroutine _scheduleCoroutine;
@@ -157,7 +140,7 @@ public partial class WarsawMetroModule : MonoBehaviour
     {
         while (_stage == 1)
         {
-            _stage1.DateTimeDisplay.GetComponent<TextMesh>().text = System.DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+            DateTimeDisplay.GetComponent<TextMesh>().text = System.DateTime.Now.ToString("dd.MM.yyyy HH:mm");
 
             yield return new WaitForSeconds(1.0f);
 
@@ -167,8 +150,8 @@ public partial class WarsawMetroModule : MonoBehaviour
             {
                 Log("Top train arrived.");
                 StopAndClearAudioRef(ref _trainTopAudio);
-                _trainTopAudio = _audio.PlaySoundAtTransformWithRef("TrainArrive", _stage1.ButtonTop.transform);
-                _stage1.TimeTop.GetComponent<TextMesh>().text = "WJAZD";
+                _trainTopAudio = _audio.PlaySoundAtTransformWithRef("TrainArrive", ButtonTop.transform);
+                TimeTop.GetComponent<TextMesh>().text = "WJAZD";
                 _trainTopArrived = true;
                 StartCoroutine(StopRefSoundDelayed(_trainTopAudio, 11.208f));
             }
@@ -176,13 +159,13 @@ public partial class WarsawMetroModule : MonoBehaviour
             {
                 Log("Top train departed.");
                 StopAndClearAudioRef(ref _trainTopAudio);
-                _trainTopAudio = _audio.PlaySoundAtTransformWithRef("TrainDepart", _stage1.ButtonTop.transform);
+                _trainTopAudio = _audio.PlaySoundAtTransformWithRef("TrainDepart", ButtonTop.transform);
                 RollTopTrain(false);
                 StartCoroutine(StopRefSoundDelayed(_trainTopAudio, 6.096f));
             }
             else if (!_trainTopArrived && _nextTrainTimeTop > 0)
             {
-                UpdateTrainTimeDisplay(_stage1.TimeTop, _nextTrainTimeTop);
+                UpdateTrainTimeDisplay(TimeTop, _nextTrainTimeTop);
             }
 
             // Bottom train
@@ -191,8 +174,8 @@ public partial class WarsawMetroModule : MonoBehaviour
             {
                 Log("Bottom train arrived.");
                 StopAndClearAudioRef(ref _trainBottomAudio);
-                _trainBottomAudio = _audio.PlaySoundAtTransformWithRef("TrainArrive", _stage1.ButtonBottom.transform);
-                _stage1.TimeBottom.GetComponent<TextMesh>().text = "WJAZD";
+                _trainBottomAudio = _audio.PlaySoundAtTransformWithRef("TrainArrive", ButtonBottom.transform);
+                TimeBottom.GetComponent<TextMesh>().text = "WJAZD";
                 _trainBottomArrived = true;
                 StartCoroutine(StopRefSoundDelayed(_trainBottomAudio, 11.208f));
             }
@@ -200,13 +183,13 @@ public partial class WarsawMetroModule : MonoBehaviour
             {
                 Log("Bottom train departed.");
                 StopAndClearAudioRef(ref _trainBottomAudio);
-                _trainBottomAudio = _audio.PlaySoundAtTransformWithRef("TrainDepart", _stage1.ButtonBottom.transform);
+                _trainBottomAudio = _audio.PlaySoundAtTransformWithRef("TrainDepart", ButtonBottom.transform);
                 RollBottomTrain(false);
                 StartCoroutine(StopRefSoundDelayed(_trainBottomAudio, 6.096f));
             }
             else if (!_trainBottomArrived && _nextTrainTimeBottom > 0)
             {
-                UpdateTrainTimeDisplay(_stage1.TimeBottom, _nextTrainTimeBottom);
+                UpdateTrainTimeDisplay(TimeBottom, _nextTrainTimeBottom);
             }
         }
     }
@@ -218,13 +201,13 @@ public partial class WarsawMetroModule : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
 
-            if (_dotCount > 3) _dotCount = 1;
-            _stage2.Dots.GetComponent<TextMesh>().text = new string('.', _dotCount++);
+            if (_dotCount > 3) _dotCount = 0;
+            Dots.GetComponent<TextMesh>().text = new string('.', _dotCount++);
 
             // random event, 1/6000 chance
             if (Random.Range(1, 6001) == 5554)
             {
-                _audio.PlaySoundAtTransform("Bagaz", _stage2.Container.transform);
+                _audio.PlaySoundAtTransform("Bagaz", Stage2.transform);
             }
 
             _nextStationTime--;
@@ -233,26 +216,26 @@ public partial class WarsawMetroModule : MonoBehaviour
                 // announce current
                 Log($"This is: {_currentStation}.");
                 StopAndClearAudioRef(ref _ambience);
-                _audio.PlaySoundAtTransform("Arriving", _stage2.Container.transform);
-                yield return StartCoroutine(PlaySound("Stacja", _stage2.Container.transform, 1.41f));
-                yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), _stage2.Container.transform, 1.776f));
+                _audio.PlaySoundAtTransform("Arriving", Stage2.transform);
+                yield return StartCoroutine(PlaySound("Stacja", Stage2.transform, 2.41f));
+                yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), Stage2.transform, 2.776f));
                 if (_rightSideDoorStations.Contains(_currentStation))
                 {
-                    yield return StartCoroutine(PlaySound("DrzwiPrawej", _stage2.Container.transform, 2.455f));
+                    yield return StartCoroutine(PlaySound("DrzwiPrawej", Stage2.transform, 2.455f));
                 }
                 else
                 {
-                    yield return StartCoroutine(PlaySound("DrzwiLewej", _stage2.Container.transform, 2.429f));
+                    yield return StartCoroutine(PlaySound("DrzwiLewej", Stage2.transform, 2.429f));
                 }
-                yield return new WaitForSeconds(11.03f);
+                yield return new WaitForSeconds(9.03f);
 
                 Log("Doors opened, waiting 20 seconds.");
-                _stage2.LeaveTrainButton.OnInteract += OnLeaveTrain;
+                LeaveTrainButton.OnInteract += OnLeaveTrain;
 
                 yield return new WaitForSeconds(20.0f);
 
                 Log("Doors closing, proceeding to next station.");
-                _stage2.LeaveTrainButton.OnInteract -= OnLeaveTrain;
+                LeaveTrainButton.OnInteract -= OnLeaveTrain;
 
                 if ((_currentStation == "Kabaty" || _currentStation == "Bródno") && _travelDirection == 1)
                 {
@@ -265,13 +248,13 @@ public partial class WarsawMetroModule : MonoBehaviour
                     yield break;
                 }
                 ProgressStation();
-                yield return StartCoroutine(PlaySound("Departing", _stage2.Container.transform, 24.0f));
-                _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", _stage2.Container.transform);
+                yield return StartCoroutine(PlaySound("Departing", Stage2.transform, 24.0f));
+                _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", Stage2.transform);
 
                 // announce next
                 Log($"Next station: {_currentStation}");
-                yield return StartCoroutine(PlaySound("NastepnaStacja", _stage2.Container.transform, 2.112f));
-                yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), _stage2.Container.transform, 1.776f));
+                yield return StartCoroutine(PlaySound("NastepnaStacja", Stage2.transform, 2.112f));
+                yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), Stage2.transform, 1.776f));
                 _nextStationTime = Random.Range(45, 76);
             }
         }
@@ -301,16 +284,16 @@ public partial class WarsawMetroModule : MonoBehaviour
         StopAndClearAudioRef(ref _trainTopAudio);
         StopAndClearAudioRef(ref _trainBottomAudio);
 
-        _stage1.Container.SetActive(false);
-        _stage2.Container.SetActive(true);
+        Stage1.SetActive(false);
+        Stage2.SetActive(true);
         _stage = 2;
         _nextStationTime = Random.Range(45, 76);
         ProgressStation();
-        yield return StartCoroutine(PlaySound("Departing", _stage1.Container.transform, 24.0f));
-        _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", _stage2.Container.transform);
+        yield return StartCoroutine(PlaySound("Departing", Stage2.transform, 24.0f));
+        _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", Stage2.transform);
         Log($"Next station: {_currentStation}");
-        yield return StartCoroutine(PlaySound("NastepnaStacja", _stage2.Container.transform, 2.112f));
-        yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), _stage2.Container.transform, 1.776f));
+        yield return StartCoroutine(PlaySound("NastepnaStacja", Stage2.transform, 2.112f));
+        yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), Stage2.transform, 1.776f));
 
         _travelCoroutine = StartCoroutine(Travel());
     }
@@ -358,34 +341,16 @@ public partial class WarsawMetroModule : MonoBehaviour
 
     private void RollTopTrain(bool struck)
     {
-        List<string> excs = new List<string>();
-        foreach (var field in _stage1.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance))
-        {
-            object val = field.GetValue(_stage1);
-            if (field.FieldType == typeof(GameObject))
-            {
-                if (val == null)
-                {
-                    excs.Add(field.Name);
-                }
-            }
-        }
-        if (excs.Count > 0)
-        {
-            throw new System.Exception(string.Join(", ", excs.ToArray()));
-        }
-
         if (struck) StopAndClearAudioRef(ref _trainTopAudio);
         _trainTopArrived = false;
         _nextTrainTimeTop = Random.Range(50, 301);
         _trainTypeTop = Random.Range(1, 5);
-        Log("Entering ifs");
-        if (_trainTypeTop == 1) _stage1.TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = _visuals.OlderSprite;
-        else if (_trainTypeTop == 2) _stage1.TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = _visuals.OldSprite;
-        else if (_trainTypeTop == 3) _stage1.TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = _visuals.CurrentSprite;
-        else if (_trainTypeTop == 4) _stage1.TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = _visuals.NewSprite;
+        if (_trainTypeTop == 1) TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = OlderSprite;
+        else if (_trainTypeTop == 2) TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = OldSprite;
+        else if (_trainTypeTop == 3) TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = CurrentSprite;
+        else if (_trainTypeTop == 4) TrainSpriteTop.GetComponent<SpriteRenderer>().sprite = NewSprite;
 
-        UpdateTrainTimeDisplay(_stage1.TimeTop, _nextTrainTimeTop);
+        UpdateTrainTimeDisplay(TimeTop, _nextTrainTimeTop);
 
         Log($"Next top train is of type {_trainTypeTop}.");
     }
@@ -396,42 +361,42 @@ public partial class WarsawMetroModule : MonoBehaviour
         _trainBottomArrived = false;
         _nextTrainTimeBottom = Random.Range(50, 301);
         _trainTypeBottom = Random.Range(1, 5);
-        if (_trainTypeBottom == 1) _stage1.TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = _visuals.OlderSprite;
-        else if (_trainTypeBottom == 2) _stage1.TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = _visuals.OldSprite;
-        else if (_trainTypeBottom == 3) _stage1.TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = _visuals.CurrentSprite;
-        else if (_trainTypeBottom == 4) _stage1.TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = _visuals.NewSprite;
+        if (_trainTypeBottom == 1) TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = OlderSprite;
+        else if (_trainTypeBottom == 2) TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = OldSprite;
+        else if (_trainTypeBottom == 3) TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = CurrentSprite;
+        else if (_trainTypeBottom == 4) TrainSpriteBottom.GetComponent<SpriteRenderer>().sprite = NewSprite;
 
-        UpdateTrainTimeDisplay(_stage1.TimeBottom, _nextTrainTimeBottom);
+        UpdateTrainTimeDisplay(TimeBottom, _nextTrainTimeBottom);
 
         Log($"Next bottom train is of type {_trainTypeBottom}.");
     }
         
     private void RollStartStation()
     {
-        //_currentLine = (Line)System.Enum.GetValues(typeof(Line)).GetValue(Random.Range(0, 2));
-        //if (_currentLine == Line.M1)
-        //{
-        //    string rawStation = _M1Stations[Random.Range(0, _M1Stations.Length)];
-        //    _currentStation = ReadableName(rawStation);
+        _currentLine = (Line)System.Enum.GetValues(typeof(Line)).GetValue(Random.Range(0, 2));
+        if (_currentLine == Line.M1)
+        {
+            string rawStation = _M1Stations[Random.Range(0, _M1Stations.Length)];
+            _currentStation = ReadableName(rawStation);
 
-        //    _stage1.StationName.GetComponent<TextMesh>().text = rawStation;
-        //    _stage1.StationBackground.GetComponent<MeshRenderer>().material = _visuals.BlueMaterial;
-        //    _stage1.DirectionTextTop.GetComponent<TextMesh>().text = _M1Stations[_M1Stations.Length - 1].ToUpper();
-        //    _stage1.DirectionTextBottom.GetComponent<TextMesh>().text = _M1Stations[0].ToUpper();
-        //    _stage1.LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = _visuals.M2Sprite;
-        //}
-        //else if (_currentLine == Line.M2)
-        //{
-        //    string rawStation = _M2Stations[Random.Range(0, _M2Stations.Length)];
-        //    _currentStation = ReadableName(rawStation);
+            StationName.GetComponent<TextMesh>().text = rawStation;
+            StationBackground.GetComponent<MeshRenderer>().material = BlueMaterial;
+            DirectionTextTop.GetComponent<TextMesh>().text = _M1Stations[_M1Stations.Length - 1].ToUpper();
+            DirectionTextBottom.GetComponent<TextMesh>().text = _M1Stations[0].ToUpper();
+            LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = M2Sprite;
+        }
+        else if (_currentLine == Line.M2)
+        {
+            string rawStation = _M2Stations[Random.Range(0, _M2Stations.Length)];
+            _currentStation = ReadableName(rawStation);
 
-        //    _stage1.StationName.GetComponent<TextMesh>().text = rawStation;
-        //    _stage1.StationBackground.GetComponent<MeshRenderer>().material = _visuals.RedMaterial;
-        //    _stage1.DirectionTextTop.GetComponent<TextMesh>().text = _M2Stations[_M2Stations.Length - 1].ToUpper();
-        //    _stage1.DirectionTextBottom.GetComponent<TextMesh>().text = _M2Stations[0].ToUpper();
-        //    _stage1.LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = _visuals.M1Sprite;
-        //}
-        //Log($"Starting on the {_currentLine} line, station {_currentStation}.");
+            StationName.GetComponent<TextMesh>().text = rawStation;
+            StationBackground.GetComponent<MeshRenderer>().material = RedMaterial;
+            DirectionTextTop.GetComponent<TextMesh>().text = _M2Stations[_M2Stations.Length - 1].ToUpper();
+            DirectionTextBottom.GetComponent<TextMesh>().text = _M2Stations[0].ToUpper();
+            LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = M1Sprite;
+        }
+        Log($"Starting on the {_currentLine} line, station {_currentStation}.");
     }
 
     private string ReadableName(string s)
@@ -463,8 +428,7 @@ public partial class WarsawMetroModule : MonoBehaviour
         int sum = 0;
         foreach (int num in seq)
         {
-            int current = DigitalRoot(num);
-            sum += current;
+            sum += DigitalRoot(num);
             if (sum > 9)
             {
                 sum = DigitalRoot(sum);
@@ -505,7 +469,6 @@ public partial class WarsawMetroModule : MonoBehaviour
 
     private void Start()
     {
-
         RollStartStation();
 
         #region Solution
@@ -568,28 +531,28 @@ public partial class WarsawMetroModule : MonoBehaviour
             _destinationStation = ReadableName(rawStation);
         }
 
-        Log($"Destination: {_destinationStation}, {_destinationLine.ToString()} line.");
+        Log($"Destination: {_destinationStation}, {_destinationLine} line.");
         Log($"Train type scores (1-4): {_type1Score}, {_type2Score}, {_type3Score}, {_type4Score}.");
-        Log($"Forbidden train types: {_forbiddenTypes.Join(", ") ?? "None"}.");
+        Log($"Forbidden train types: {(_forbiddenTypes.Join(", ").Length != 0 ? _forbiddenTypes.Join(", ") : "None")}.");
         #endregion
 
         RollTopTrain(false);
         RollBottomTrain(false);
 
         #region Events
-        _stage1.ButtonTop.OnInteract += OnInteractTop;
-        _stage1.ButtonBottom.OnInteract += OnInteractBottom;
-        _stage1.SwitchLineButton.OnInteract += OnLineSwitch;
+        ButtonTop.OnInteract += OnInteractTop;
+        ButtonBottom.OnInteract += OnInteractBottom;
+        SwitchLineButton.OnInteract += OnLineSwitch;
         #endregion
 
-        _stage2.Container.SetActive(false);
-        _solvedContainer.SetActive(false);
+        Stage2.SetActive(false);
+        SolvedContainer.SetActive(false);
 
-        _stage1.SwitchLineButton.transform.Translate(new Vector3(0.0f, -0.1f, 0.0f));
+        SwitchLineButton.transform.Translate(new Vector3(0.0f, -0.1f, 0.0f));
 
         if (_currentStation == "Świętokrzyska")
         {
-            _stage1.SwitchLineButton.transform.Translate(new Vector3(0.0f, 0.1f, 0.0f));
+            SwitchLineButton.transform.Translate(new Vector3(0.0f, 0.1f, 0.0f));
         }
 
         if (_bombInfo.GetTime() < 900.0f)
@@ -600,7 +563,6 @@ public partial class WarsawMetroModule : MonoBehaviour
 
     private void Activate()
     {
-        Log("Activating");
         _stage = 1;
         _scheduleCoroutine = StartCoroutine(TrainSchedule());
     }
@@ -642,7 +604,7 @@ public partial class WarsawMetroModule : MonoBehaviour
             Strike($"Boarded forbidden train type {_trainTypeTop}, strike.");
             return false;
         }
-        Log($"Successfully boarded train headed for {_stage1.DirectionTextTop.GetComponent<TextMesh>().text[0] + _stage1.DirectionTextTop.GetComponent<TextMesh>().text.Substring(1).ToLower()}.");
+        Log($"Successfully boarded train headed for {DirectionTextTop.GetComponent<TextMesh>().text[0] + DirectionTextTop.GetComponent<TextMesh>().text.Substring(1).ToLower()}.");
         _travelDirection = 1;
         StartCoroutine(ProgressStage());
         return false;
@@ -671,7 +633,7 @@ public partial class WarsawMetroModule : MonoBehaviour
             Strike($"Boarded forbidden train type {_trainTypeBottom}, strike.");
             return false;
         }
-        Log($"Successfully boarded train headed for {_stage1.DirectionTextBottom.GetComponent<TextMesh>().text[0] + _stage1.DirectionTextBottom.GetComponent<TextMesh>().text.Substring(1).ToLower()}.");
+        Log($"Successfully boarded train headed for {DirectionTextBottom.GetComponent<TextMesh>().text[0] + DirectionTextBottom.GetComponent<TextMesh>().text.Substring(1).ToLower()}.");
         _travelDirection = -1;
         StartCoroutine(ProgressStage());
         return false;
@@ -683,18 +645,18 @@ public partial class WarsawMetroModule : MonoBehaviour
         if (_currentLine == Line.M2)
         {
             _currentLine = Line.M1;
-            _stage1.StationBackground.GetComponent<MeshRenderer>().material = _visuals.BlueMaterial;
-            _stage1.DirectionTextTop.GetComponent<TextMesh>().text = "KABATY";
-            _stage1.DirectionTextBottom.GetComponent<TextMesh>().text = "MŁOCINY";
-            _stage1.LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = _visuals.M2Sprite;
+            StationBackground.GetComponent<MeshRenderer>().material = BlueMaterial;
+            DirectionTextTop.GetComponent<TextMesh>().text = "KABATY";
+            DirectionTextBottom.GetComponent<TextMesh>().text = "MŁOCINY";
+            LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = M2Sprite;
         }
         else if (_currentLine == Line.M1)
         {
             _currentLine = Line.M2;
-            _stage1.StationBackground.GetComponent<MeshRenderer>().material = _visuals.RedMaterial;
-            _stage1.DirectionTextTop.GetComponent<TextMesh>().text = "BRÓDNO";
-            _stage1.DirectionTextBottom.GetComponent<TextMesh>().text = "BEMOWO";
-            _stage1.LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = _visuals.M1Sprite;
+            StationBackground.GetComponent<MeshRenderer>().material = RedMaterial;
+            DirectionTextTop.GetComponent<TextMesh>().text = "BRÓDNO";
+            DirectionTextBottom.GetComponent<TextMesh>().text = "BEMOWO";
+            LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = M1Sprite;
         }
         RollTopTrain(false);
         RollBottomTrain(false);
@@ -725,8 +687,8 @@ public partial class WarsawMetroModule : MonoBehaviour
         StopAllCoroutines();
 
         _stage = 1;
-        _stage2.Container.SetActive(false);
-        _stage1.Container.SetActive(true);
+        Stage2.SetActive(false);
+        Stage1.SetActive(true);
 
         RollTopTrain(true);
         RollBottomTrain(true);
@@ -738,12 +700,13 @@ public partial class WarsawMetroModule : MonoBehaviour
     public void Solve()
     {
         StopAllCoroutines();
-        _stage1.ButtonTop.OnInteract -= OnInteractTop;
-        _stage1.ButtonBottom.OnInteract -= OnInteractBottom;
-        _stage1.SwitchLineButton.OnInteract -= OnLineSwitch;
-        _stage2.LeaveTrainButton.OnInteract -= OnLeaveTrain;
-        _audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, _stage1.Container.transform);
-        _solvedContainer.SetActive(true);
+        ButtonTop.OnInteract -= OnInteractTop;
+        ButtonBottom.OnInteract -= OnInteractBottom;
+        SwitchLineButton.OnInteract -= OnLineSwitch;
+        LeaveTrainButton.OnInteract -= OnLeaveTrain;
+        _audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, Stage1.transform);
+        Stage2.SetActive(false);
+        SolvedContainer.SetActive(true);
         Log("Destination achieved, module solved.");
         _module.HandlePass();
     }
