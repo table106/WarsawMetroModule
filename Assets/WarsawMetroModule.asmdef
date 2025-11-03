@@ -1,6 +1,3 @@
-{
-  "name": "WarsawMetroModule",
-  "references": [],
-  "includePlatforms": [],
-  "excludePlatforms": []
+﻿{
+	"name": "WarsawMetroModule"
 }

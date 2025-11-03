@@ -221,7 +221,7 @@ public class FakeBombInfo : MonoBehaviour
         if (strikes == numStrikes)
         {
             OnBombExploded(reason);
-            if (Detonate != null) Detonate();
+            Detonate?.Invoke();
         }
 
         if (TimerModule.TimeMode)

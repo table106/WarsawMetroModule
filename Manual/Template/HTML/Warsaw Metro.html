@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Warsaw Metro — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        .flex-row, .flex-col, table#train tr > td > div {
+            display: flex;
+        }
+        .flex-col {
+            flex-direction: column;
+            align-items: center;
+        }
+        span.blue {
+            color: blue;
+        }
+        span.red {
+            color: red;
+        }
+        .line {
+            height: 500px;
+            width: 1.2em;
+            margin-left: 0.4em;
+            color: white;
+            text-align: center;
+        }
+        .separate {
+            margin-top: 13px;
+        }
+        div#metro > div:not(.metro-info) {
+            width: 50%;
+            margin-top: 35px;
+        }
+        #M1-heading, #M2-heading {
+            color: white;
+            padding: 6px;
+            text-align: center;
+            height: 500px;
+        }
+        #M1-heading, .line.blue, .separate.blue {
+            background-color: blue;
+        }
+        #M2-heading, .line.red, .separate.red {
+            background-color: red;
+        }
+        table#train tr > td > div {
+            align-items: center;
+            justify-content: center;
+        }
+        img.train, table {
+            width: 100%;
+        }
+        table.map td {
+            text-align: center;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Warsaw Metro</span>
+            </div>
+            <div class="page-content">
+                <img src="img/Component/Warsaw Metro.svg" class="diagram">
+                <h2>On the Subject of Warsaw Metro</h1>
+                <p class="flavour-text">Drzwi otwierają się z lewej strony.</p>
+                <ul>
+                    <li>The module will present you with a station name, <b>the starting station.</b> There will also be two information displays.</li>
+                    <li>Determine your destination, and the allowed train types using the instructions below.</li>
+                    <li>Board an allowed train type to progress to the next stage.</li>
+                    <li>The next stage will have you be inside a train, with a button to leave it.</li>
+                    <li><b>To change the metro line, press the button with the other line's icon while standing at the platform of station Świętokrzyska.</b></li>
+                    <li>Leave the train at your destination to defuse the module.</li>
+                    <li>A strike is incurred for:
+                        <ul>
+                            <li>Boarding a train that terminates at your current station.</li>
+                            <li>Staying in a train that is terminating.</li>
+                            <li>Leaving the train at a station that isn't necessary for a transfer, and isn't your destination.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3>Destination</h3>
+                <ol>
+                    <li>Start with the digital root of the digits in the serial number.</li>
+                    <li>If it's even, the destination line is the <span class="blue">M1</span>. Otherwise, it's the <span class="red">M2</span>.</li>
+                    <li>Next, multiply the largest digit of the serial number by the sum of ports and lit indicators.</li>
+                    <li>If the destination line is the <span class="blue">M1</span>, <span class="highlightable">modulo the above product by 21.</span></li>
+                    <li>Otherwise, <span class="highlightable">modulo it by 18.</span></li>
+                    <li>Use the <b>chart from page 3</b> corresponding to your destination line to obtain a station name. <b>This is the destination station.</b> For Świętokrzyska, match the destination line as well.</li>
+                </ol>
+            </div>
+            <div class="page-footer relative-footer">Page 1 of 3</div>
+        </div>
+        <div class="page page-bg-02">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Warsaw Metro</span>
+            </div>
+            <div class="page-content">
+                <h3>Train Scores</h3>
+                <table id="train">
+                    <tr>
+                        <td>
+                            <div class="flex-col"><img src="./img/Warsaw Metro/TrainOlder.png" alt="Metrovagonmash 81-717 train" class="train"><b>Metrovagonmash 81-717</b></div>
+                        </td>
+                        <td>
+                            <div class="flex-col"><img src="./img/Warsaw Metro/TrainOld.png" alt="Alstom Metropolis train" class="train"><b>Alstom Metropolis</b></div>
+                        </td>
+                        <td>
+                            <div class="flex-col"><img src="./img/Warsaw Metro/TrainCurrent.png" alt="Siemens Inspiro train" class="train"><b>Siemens Inspiro</b></div>
+                        </td>
+                        <td>
+                            <div class="flex-col"><img src="./img/Warsaw Metro/TrainNew.png" alt="Skoda Varsovia train" class="train"><b>Skoda Varsovia</b></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <span>Is there a lit CLR indicator?</span> 
+                                <span><b>+3</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is there an unlit FRK indicator?</span>
+                                <span><b>+3</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is the displayed day a Tuesday?</span>
+                                <span><b>+3</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is there a DVI-D port?</span>
+                                <span><b>+3</b></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <span>Does the serial number contain a M, W or 2?</span>
+                                <span><b>-2</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is there a PS/2 port?</span>
+                                <span><b>-2</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Are there more than 3 batteries?</span>
+                                <span><b>-2</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is there an RJ-45 port, or is the starting line the <span class="blue">M1</span>?</span>
+                                <span><b>-2</b></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <span>Is there no RCA port?</span>
+                                <span><b>+1</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Is there an empty port plate?</span>
+                                <span><b>+1</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Does the serial number contain a prime number?</span>
+                                <span><b>+1</b></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>Does the serial number contain a duplicate letter?</span>
+                                <span><b>+1</b></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <strong>Any train that has the lowest score is not allowed.</strong>
+            </div>
+            <div class="page-footer relative-footer">Page 2 of 3</div>
+        </div>
+        <div class="page page-bg-03">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Warsaw Metro</span>
+            </div>
+            <div class="page-content">
+                <h3>Warsaw Metro Lines</h3>
+                <div id="metro" class="flex-row">
+                    <div class="metro-info">
+                        <span id="M1-heading">M1</span>
+                        <div class="line blue">
+                            <div class="separate blue"></div>
+                            0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20
+                        </div>
+                    </div>
+                    <div>
+                        <span class="highlightable"><b>Młociny</b></span><br>
+                        <span class="highlightable">Wawrzyszew</span><br>
+                        <span class="highlightable">Stare Bielany</span><br>
+                        <span class="highlightable">Słodowiec</span><br>
+                        <span class="highlightable">Marymont</span><br>
+                        <span class="highlightable">Plac Wilsona</span><br>
+                        <span class="highlightable">Dworzec Gdański</span><br>
+                        <span class="highlightable">Ratusz Arsenał</span><br>
+                        <span class="highlightable red">Świętokrzyska</span><br>
+                        <span class="highlightable">Centrum</span><br>
+                        <span class="highlightable">Politechnika</span><br>
+                        <span class="highlightable">Pole Mokotowskie</span><br>
+                        <span class="highlightable">Racławicka</span><br>
+                        <span class="highlightable">Wierzbno</span><br>
+                        <span class="highlightable">Wilanowska</span><br>
+                        <span class="highlightable">Służew</span><br>
+                        <span class="highlightable">Ursynów</span><br>
+                        <span class="highlightable">Stokłosy</span><br>
+                        <span class="highlightable">Imielin</span><br>
+                        <span class="highlightable">Natolin</span><br>
+                        <span class="highlightable"><b>Kabaty</b></span>
+                    </div>
+                    <div class="metro-info">
+                        <span id="M2-heading">M2</span>
+                        <div class="line red">
+                            <div class="separate red"></div>
+                            0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17
+                        </div>
+                    </div>
+                    <div>
+                        <span class="highlightable"><b>Bemowo</b></span><br>
+                        <span class="highlightable">Ulrychów</span><br>
+                        <span class="highlightable">Księcia Janusza</span><br>
+                        <span class="highlightable">Młynów</span><br>
+                        <span class="highlightable">Płocka</span><br>
+                        <span class="highlightable">Rondo Daszyńskiego</span><br>
+                        <span class="highlightable">Rondo ONZ</span><br>
+                        <span class="highlightable blue">Świętokrzyska</span><br>
+                        <span class="highlightable">Nowy Świat-Uniwersytet</span><br>
+                        <span class="highlightable">Centrum Nauki Kopernik</span><br>
+                        <span class="highlightable">Stadion Narodowy</span><br>
+                        <span class="highlightable">Dworzec Wileński</span><br>
+                        <span class="highlightable">Szwedzka</span><br>
+                        <span class="highlightable">Targówek Mieszkaniowy</span><br>
+                        <span class="highlightable">Trocka</span><br>
+                        <span class="highlightable">Zacisze</span><br>
+                        <span class="highlightable">Kondratowicza</span><br>
+                        <span class="highlightable"><b>Bródno</b></span>
+                    </div>
+                </div>
+            </div>
+            <div class="page-footer relative-footer">Page 3 of 3</div>
+        </div>
+    </div>
+</body>
+</html>

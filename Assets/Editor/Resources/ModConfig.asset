@@ -14,7 +14,9 @@ MonoBehaviour:
   id: WarsawMetroModule
   title: Warsaw Metro
   author: table106
-  description: Take a ride with the Warsaw metro to get to your destination.
-  version: 
+  description: "Drzwi otwieraj\u0105 si\u0119 z lewej strony.\n\nRide along Warsaw's
+    M1 and M2 Metro lines to your destination.\n\nManual can be found at ktane.timwi.de
+    or in the manuals folder of your game."
+  version: 1
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: b64a2356d33e9a24db7176156c52a564, type: 3}
