@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script src="js/ktane-utils.js"></script>
     <style>
-        .flex-row, .flex-col, table#train tr > td > div {
+        .flex-row, .flex-col, table#train div {
             display: flex;
         }
         .flex-col {
@@ -22,11 +22,13 @@
         span.red {
             color: red;
         }
-        .line {
+        #M1-heading, #M2-heading, .line {
             height: 500px;
+            color: white;
+        }
+        .line {
             width: 1.2em;
             margin-left: 0.4em;
-            color: white;
             text-align: center;
         }
         .separate {
@@ -37,10 +39,8 @@
             margin-top: 35px;
         }
         #M1-heading, #M2-heading {
-            color: white;
             padding: 6px;
             text-align: center;
-            height: 500px;
         }
         #M1-heading, .line.blue, .separate.blue {
             background-color: blue;
@@ -48,7 +48,7 @@
         #M2-heading, .line.red, .separate.red {
             background-color: red;
         }
-        table#train tr > td > div {
+        table#train div {
             align-items: center;
             justify-content: center;
         }
@@ -73,19 +73,20 @@
                 <h2>On the Subject of Warsaw Metro</h1>
                 <p class="flavour-text">Drzwi otwierają się z lewej strony.</p>
                 <ul>
-                    <li>The module will present you with a station name, <b>the starting station.</b> There will also be two information displays.</li>
-                    <li>Determine your destination, and the allowed train types using the instructions below.</li>
+                    <li>The module will initially present you with a station name, <b>the starting station.</b> There will also be two information displays.</li>
+                    <li>Determine the destination, and the allowed train types using the instructions below.</li>
                     <li>Board an allowed train type to progress to the next stage.</li>
                     <li>The next stage will have you be inside a train, with a button to leave it.</li>
                     <li><b>To change the metro line, press the button with the other line's icon while standing at the platform of station Świętokrzyska.</b></li>
-                    <li>Leave the train at your destination to defuse the module.</li>
+                    <li>Leave the train at the destination to defuse the module.</li>
                     <li>A strike is incurred for:
                         <ul>
                             <li>Boarding a train that terminates at your current station.</li>
                             <li>Staying in a train that is terminating.</li>
-                            <li>Leaving the train at a station that isn't necessary for a transfer, and isn't your destination.</li>
+                            <li>Leaving the train at a station that isn't necessary for a transfer, and isn't the destination.</li>
                         </ul>
                     </li>
+                    <li>Striking reverts to the original starting station.</li>
                 </ul>
                 <h3>Destination</h3>
                 <ol>
@@ -94,7 +95,7 @@
                     <li>Next, multiply the largest digit of the serial number by the sum of ports and lit indicators.</li>
                     <li>If the destination line is the <span class="blue">M1</span>, <span class="highlightable">modulo the above product by 21.</span></li>
                     <li>Otherwise, <span class="highlightable">modulo it by 18.</span></li>
-                    <li>Use the <b>chart from page 3</b> corresponding to your destination line to obtain a station name. <b>This is the destination station.</b> For Świętokrzyska, match the destination line as well.</li>
+                    <li>Use the <b>chart from page 3</b> corresponding to your destination line to obtain a station name. <b>This is the destination station.</b> If the result is Świętokrzyska, make sure to match the destination line as well.</li>
                 </ol>
             </div>
             <div class="page-footer relative-footer">Page 1 of 3</div>
