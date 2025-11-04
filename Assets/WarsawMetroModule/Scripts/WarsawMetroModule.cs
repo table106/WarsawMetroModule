@@ -4,8 +4,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-// * Template Wiki: https://github.com/TheKuroEver/KTaNE-Module-Template/wiki
-// * KModKit Documentation: https://github.com/Qkrisi/ktanemodkit/wiki
 [RequireComponent(typeof(KMBombModule), typeof(KMSelectable))]
 public partial class WarsawMetroModule : MonoBehaviour
 {
@@ -80,32 +78,13 @@ public partial class WarsawMetroModule : MonoBehaviour
     private Line _destinationLine;
     private string _destinationStation;
     #region References
-    public GameObject Stage1;
-    public KMSelectable ButtonTop;
-    public KMSelectable ButtonBottom;
-    public GameObject TimeTop;
-    public GameObject TimeBottom;
-    public GameObject DirectionTextTop;
-    public GameObject DirectionTextBottom;
-    public GameObject DateTimeDisplay;
-    public GameObject TrainSpriteTop;
-    public GameObject TrainSpriteBottom;
-    public GameObject StationName;
-    public GameObject StationBackground;
-    public KMSelectable SwitchLineButton;
-    public GameObject LineSwitchSprite;
-    public GameObject Stage2;
-    public GameObject Dots;
+    public GameObject Stage1, TimeTop, TimeBottom, DirectionTextTop, DirectionTextBottom, DateTimeDisplay, TrainSpriteTop, TrainSpriteBottom, StationName, StationBackground, LineSwitchSprite;
+    public KMSelectable ButtonTop, ButtonBottom, SwitchLineButton;
+    public GameObject Stage2, Dots;
     public KMSelectable LeaveTrainButton;
-    public Material BlueMaterial;
-    public Material RedMaterial;
-    public Sprite M1Sprite;
-    public Sprite M2Sprite;
-    public Sprite OlderSprite;
-    public Sprite OldSprite;
-    public Sprite CurrentSprite;
-    public Sprite NewSprite;
     public GameObject SolvedContainer;
+    public Material BlueMaterial, RedMaterial;
+    public Sprite M1Sprite, M2Sprite, OlderSprite, OldSprite, CurrentSprite, NewSprite;
     #endregion
     #region Stage 1 variables
     private int _trainTypeTop = 0;
@@ -114,8 +93,8 @@ public partial class WarsawMetroModule : MonoBehaviour
     private int _nextTrainTimeBottom;
     private bool _trainTopArrived = false;
     private bool _trainBottomArrived = false;
-    private KMAudio.KMAudioRef _trainTopAudio = null;
-    private KMAudio.KMAudioRef _trainBottomAudio = null;
+    private KMAudio.KMAudioRef _trainTopAudio;
+    private KMAudio.KMAudioRef _trainBottomAudio;
     private int _type1Score = 0;
     private int _type2Score = 0;
     private int _type3Score = 0;
@@ -133,8 +112,6 @@ public partial class WarsawMetroModule : MonoBehaviour
     private Coroutine _travelCoroutine;
     #endregion
 
-#pragma warning disable IDE0051
-
     // Stage 1
     private IEnumerator TrainSchedule()
     {
@@ -145,8 +122,7 @@ public partial class WarsawMetroModule : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
 
             // Top train
-            _nextTrainTimeTop--;
-            if (_nextTrainTimeTop == 20 && !_trainTopArrived)
+            if (--_nextTrainTimeTop == 20 && !_trainTopArrived)
             {
                 Log("Top train arrived.");
                 StopAndClearAudioRef(ref _trainTopAudio);
@@ -169,8 +145,7 @@ public partial class WarsawMetroModule : MonoBehaviour
             }
 
             // Bottom train
-            _nextTrainTimeBottom--;
-            if (_nextTrainTimeBottom == 20 && !_trainBottomArrived)
+            if (--_nextTrainTimeBottom == 20 && !_trainBottomArrived)
             {
                 Log("Bottom train arrived.");
                 StopAndClearAudioRef(ref _trainBottomAudio);
@@ -204,16 +179,14 @@ public partial class WarsawMetroModule : MonoBehaviour
             if (_dotCount > 3) _dotCount = 0;
             Dots.GetComponent<TextMesh>().text = new string('.', _dotCount++);
 
-            // random event, 1/6000 chance
-            if (Random.Range(1, 6001) == 5554)
+            // random event, 1/2000 chance
+            if (Random.Range(0, 2000) == 1476)
             {
                 _audio.PlaySoundAtTransform("Bagaz", Stage2.transform);
             }
 
-            _nextStationTime--;
-            if (_nextStationTime == 0)
+            if (--_nextStationTime == 0)
             {
-                // announce current
                 Log($"This is: {_currentStation}.");
                 StopAndClearAudioRef(ref _ambience);
                 _audio.PlaySoundAtTransform("Arriving", Stage2.transform);
@@ -229,20 +202,15 @@ public partial class WarsawMetroModule : MonoBehaviour
                 }
                 yield return new WaitForSeconds(9.03f);
 
-                Log("Doors opened, waiting 20 seconds.");
+                Log("Doors opened, waiting 10 seconds.");
                 LeaveTrainButton.OnInteract += OnLeaveTrain;
 
-                yield return new WaitForSeconds(20.0f);
+                yield return new WaitForSeconds(10.0f);
 
                 Log("Doors closing, proceeding to next station.");
                 LeaveTrainButton.OnInteract -= OnLeaveTrain;
 
-                if ((_currentStation == "Kabaty" || _currentStation == "Bródno") && _travelDirection == 1)
-                {
-                    Strike("Got kicked out of terminating train by security, strike.");
-                    yield break;
-                }
-                if ((_currentStation == "Młociny" || _currentStation == "Bemowo") && _travelDirection == -1)
+                if (((_currentStation == "Kabaty" || _currentStation == "Bródno") && _travelDirection == 1) || ((_currentStation == "Młociny" || _currentStation == "Bemowo") && _travelDirection == -1))
                 {
                     Strike("Got kicked out of terminating train by security, strike.");
                     yield break;
@@ -251,11 +219,10 @@ public partial class WarsawMetroModule : MonoBehaviour
                 yield return StartCoroutine(PlaySound("Departing", Stage2.transform, 24.0f));
                 _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", Stage2.transform);
 
-                // announce next
                 Log($"Next station: {_currentStation}.");
                 yield return StartCoroutine(PlaySound("NastepnaStacja", Stage2.transform, 2.112f));
                 yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), Stage2.transform, 1.776f));
-                _nextStationTime = Random.Range(45, 76);
+                _nextStationTime = Random.Range(20, 41);
             }
         }
 
@@ -266,12 +233,6 @@ public partial class WarsawMetroModule : MonoBehaviour
     {
         _audio.PlaySoundAtTransform(name, transform);
         yield return new WaitForSeconds(duration);
-    }
-
-    private IEnumerator StopRefSoundDelayed(KMAudio.KMAudioRef sound, float after)
-    {
-        yield return new WaitForSeconds(after);
-        StopAndClearAudioRef(ref sound);
     }
 
     private IEnumerator ProgressStage()
@@ -287,7 +248,7 @@ public partial class WarsawMetroModule : MonoBehaviour
         Stage1.SetActive(false);
         Stage2.SetActive(true);
         _stage = 2;
-        _nextStationTime = Random.Range(45, 76);
+        _nextStationTime = Random.Range(20, 41);
         ProgressStation();
         yield return StartCoroutine(PlaySound("Departing", Stage2.transform, 24.0f));
         _ambience = _audio.PlaySoundAtTransformWithRef("Ambience", Stage2.transform);
@@ -298,41 +259,11 @@ public partial class WarsawMetroModule : MonoBehaviour
         _travelCoroutine = StartCoroutine(Travel());
     }
 
-    private void UpdateTrainTimeDisplay(GameObject timeObj, int timeSeconds)
-    {
-        TextMesh textMesh = timeObj.GetComponent<TextMesh>();
-        if (timeSeconds >= 180)
-        {
-            textMesh.text = $"{timeSeconds / 60}min";
-        }
-        else
-        {
-            textMesh.text = string.Format("{0}:{1:D2}", timeSeconds / 60, timeSeconds % 60);
-        }
-    }
-
-    private void StopAndClearAudioRef(ref KMAudio.KMAudioRef audioRef)
-    {
-        if (audioRef != null)
-        {
-            audioRef.StopSound();
-            audioRef = null;
-        }
-    }
-
     private void ProgressStation()
     {
         string[] stations = (_currentLine == Line.M1) ? _M1Stations : _M2Stations;
-
         int currentIndex = System.Array.FindIndex(stations, s => ReadableName(s) == _currentStation);
-
-        if (currentIndex == -1)
-        {
-            throw new System.IndexOutOfRangeException("Index not found");
-        }
-
         int newIndex = currentIndex + _travelDirection;
-
         if (newIndex >= 0 && newIndex < stations.Length)
         {
             _currentStation = ReadableName(stations[newIndex]);
@@ -370,8 +301,38 @@ public partial class WarsawMetroModule : MonoBehaviour
 
         Log($"Next bottom train is of type {_trainTypeBottom}.");
     }
-        
-    private void RollStartStation()
+
+    private new void StopAllCoroutines()
+    {
+        if (_scheduleCoroutine != null)
+        {
+            StopCoroutine(_scheduleCoroutine);
+            _scheduleCoroutine = null;
+        }
+        if (_travelCoroutine != null)
+        {
+            StopCoroutine(_travelCoroutine);
+            _travelCoroutine = null;
+        }
+        StopAndClearAudioRef(ref _ambience);
+        StopAndClearAudioRef(ref _trainTopAudio);
+        StopAndClearAudioRef(ref _trainBottomAudio);
+    }
+#pragma warning disable IDE0051
+    private void Awake()
+    {
+        _moduleId = s_moduleCount++;
+
+        _module = GetComponent<KMBombModule>();
+        _bombInfo = GetComponent<KMBombInfo>();
+        _audio = GetComponent<KMAudio>();
+
+        _module.OnActivate += Activate;
+        _bombInfo.OnBombSolved += OnEnd;
+        _bombInfo.OnBombExploded += OnEnd;
+    }
+
+    private void Start()
     {
         _currentLine = (Line)System.Enum.GetValues(typeof(Line)).GetValue(Random.Range(0, 2));
         if (_currentLine == Line.M1)
@@ -397,79 +358,6 @@ public partial class WarsawMetroModule : MonoBehaviour
             LineSwitchSprite.GetComponent<SpriteRenderer>().sprite = M1Sprite;
         }
         Log($"Starting on the {_currentLine} line, station {_currentStation}.");
-    }
-
-    private string ReadableName(string s)
-    {
-        return s.Replace("-\n-", "-").Replace('\n', ' ').Trim();
-    }
-
-    private string NormalizeName(string s)
-    {
-        return s
-            .Replace(" ", string.Empty)
-            .Replace("-", string.Empty)
-            .Replace('ę', 'e')
-            .Replace('ł', 'l')
-            .Replace('ń', 'n')
-            .Replace('ó', 'o')
-            .Replace('Ś', 'S')
-            .Replace('ż', 'z');
-    }
-
-    private int DigitalRoot(int n)
-    {
-        if (n == 0) return 0;
-        return 1 + (n - 1) % 9;
-    }
-
-    private int DigitalRoot(IEnumerable<int> seq)
-    {
-        int sum = 0;
-        foreach (int num in seq)
-        {
-            sum += DigitalRoot(num);
-            if (sum > 9)
-            {
-                sum = DigitalRoot(sum);
-            }
-        }
-        return DigitalRoot(sum);
-    }
-
-    private new void StopAllCoroutines()
-    {
-        if (_scheduleCoroutine != null)
-        {
-            StopCoroutine(_scheduleCoroutine);
-            _scheduleCoroutine = null;
-        }
-        if (_travelCoroutine != null)
-        {
-            StopCoroutine(_travelCoroutine);
-            _travelCoroutine = null;
-        }
-        StopAndClearAudioRef(ref _ambience);
-        StopAndClearAudioRef(ref _trainTopAudio);
-        StopAndClearAudioRef(ref _trainBottomAudio);
-    }
-
-    private void Awake()
-    {
-        _moduleId = s_moduleCount++;
-
-        _module = GetComponent<KMBombModule>();
-        _bombInfo = GetComponent<KMBombInfo>();
-        _audio = GetComponent<KMAudio>();
-
-        _module.OnActivate += Activate;
-        _bombInfo.OnBombSolved += OnEnd;
-        _bombInfo.OnBombExploded += OnEnd;
-    }
-
-    private void Start()
-    {
-        RollStartStation();
 
         #region Solution
         // Type 1 score
@@ -503,15 +391,9 @@ public partial class WarsawMetroModule : MonoBehaviour
             new KeyValuePair<int, int>(3, _type3Score),
             new KeyValuePair<int, int>(4, _type4Score)
         };
-        List<int> keys = new List<int>();
-        foreach (var entry in scoreMap)
-        {
-            if (entry.Value == scoreMap.Min(e => e.Value))
-            {
-                keys.Add(entry.Key);
-            }
-        }
-        _forbiddenTypes = keys.Count == 4 ? new List<int>() : keys;
+        List<int> lowest = new List<int>();
+        foreach (var entry in scoreMap) if (entry.Value == scoreMap.Min(e => e.Value)) lowest.Add(entry.Key);
+        _forbiddenTypes = lowest.Count == 4 ? new List<int>() : lowest;
 
         // Destination line
         int dr = DigitalRoot(_bombInfo.GetSerialNumberNumbers());
@@ -519,52 +401,37 @@ public partial class WarsawMetroModule : MonoBehaviour
         else _destinationLine = Line.M2;
 
         // Destination station
-        int res = (_bombInfo.GetPortCount() + _bombInfo.GetOnIndicators().Count()) * _bombInfo.GetSerialNumberNumbers().Max();
+        int destStationIndex = (_bombInfo.GetPortCount() + _bombInfo.GetOnIndicators().Count()) * _bombInfo.GetSerialNumberNumbers().Max();
         if (_destinationLine == Line.M1)
         {
-            string rawStation = _M1Stations[res % 21];
+            string rawStation = _M1Stations[destStationIndex % 21];
             _destinationStation = ReadableName(rawStation);
         }
         else
         {
-            string rawStation = _M2Stations[res % 18];
+            string rawStation = _M2Stations[destStationIndex % 18];
             _destinationStation = ReadableName(rawStation);
         }
 
         Log($"Destination: {_destinationStation}, {_destinationLine} line.");
         Log($"Train type scores (1-4): {_type1Score}, {_type2Score}, {_type3Score}, {_type4Score}.");
-        Log($"Forbidden train types: {(_forbiddenTypes.Join(", ").Length != 0 ? _forbiddenTypes.Join(", ") : "None")}.");
+        string types = _forbiddenTypes.Join(", ");
+        Log($"Forbidden train types: {(types.Length != 0 ? types : "None")}.");
         #endregion
 
-        RollTopTrain(false);
-        RollBottomTrain(false);
-
-        #region Events
+        SwitchLineButton.OnInteract += OnPress;
+        LeaveTrainButton.OnInteract += OnPress;
         ButtonTop.OnInteract += OnInteractTop;
         ButtonBottom.OnInteract += OnInteractBottom;
         SwitchLineButton.OnInteract += OnLineSwitch;
-        #endregion
 
         Stage2.SetActive(false);
         SolvedContainer.SetActive(false);
 
-        SwitchLineButton.transform.Translate(new Vector3(0.0f, -0.1f, 0.0f));
-
-        if (_currentStation == "Świętokrzyska")
+        if (_currentStation != "Świętokrzyska")
         {
-            SwitchLineButton.transform.Translate(new Vector3(0.0f, 0.1f, 0.0f));
+            SwitchLineButton.transform.Translate(new Vector3(0.0f, -0.035f, 0.0f));
         }
-
-        if (_bombInfo.GetTime() < 900.0f)
-        {
-            // failsafe
-        }
-    }
-
-    private void Activate()
-    {
-        _stage = 1;
-        _scheduleCoroutine = StartCoroutine(TrainSchedule());
     }
 
     private void OnDestroy()
@@ -572,8 +439,14 @@ public partial class WarsawMetroModule : MonoBehaviour
         StopAllCoroutines();
         _stage = 0;
     }
-
 #pragma warning restore IDE0051
+    private void Activate()
+    {
+        _stage = 1;
+        _scheduleCoroutine = StartCoroutine(TrainSchedule());
+        RollTopTrain(false);
+        RollBottomTrain(false);
+    }
 
     private void OnEnd()
     {
@@ -668,16 +541,40 @@ public partial class WarsawMetroModule : MonoBehaviour
         Log($"Left the train on {_currentStation}.");
         if (_currentStation == _destinationStation)
         {
-            Solve();
+            // Solve
+            StopAllCoroutines();
+            ButtonTop.OnInteract -= OnInteractTop;
+            ButtonBottom.OnInteract -= OnInteractBottom;
+            SwitchLineButton.OnInteract -= OnLineSwitch;
+            LeaveTrainButton.OnInteract -= OnLeaveTrain;
+            _audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, SolvedContainer.transform);
+            Stage2.SetActive(false);
+            SolvedContainer.SetActive(true);
+            Log("Destination achieved, module solved.");
+            _module.HandlePass();
         }
         else if (_currentLine == _destinationLine)
         {
             Strike("Left the train on a station that isn't the destination or a necessary transfer, strike.");
         }
+        else // At Świętokrzyska
+        {
+            SwitchLineButton.transform.Translate(new Vector3(0.0f, 0.035f, 0.0f));
+            if (_travelCoroutine != null)
+            {
+                StopCoroutine(_travelCoroutine);
+                _travelCoroutine = null;
+            }
+            Activate();
+        }
         return false;
     }
 
-    public void Log(string message) => Debug.Log($"[{_module.ModuleDisplayName} #{_moduleId}] {message}");
+    private bool OnPress()
+    {
+        _audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Stage1.transform);
+        return false;
+    }
 
     public void Strike(string message)
     {
@@ -695,19 +592,5 @@ public partial class WarsawMetroModule : MonoBehaviour
 
         // Restart the Stage 1 coroutine
         _scheduleCoroutine = StartCoroutine(TrainSchedule());
-    }
-
-    public void Solve()
-    {
-        StopAllCoroutines();
-        ButtonTop.OnInteract -= OnInteractTop;
-        ButtonBottom.OnInteract -= OnInteractBottom;
-        SwitchLineButton.OnInteract -= OnLineSwitch;
-        LeaveTrainButton.OnInteract -= OnLeaveTrain;
-        _audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, Stage1.transform);
-        Stage2.SetActive(false);
-        SolvedContainer.SetActive(true);
-        Log("Destination achieved, module solved.");
-        _module.HandlePass();
     }
 }
