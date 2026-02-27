@@ -553,19 +553,17 @@ public partial class WarsawMetroModule : MonoBehaviour
             Log("Destination achieved, module solved.");
             _module.HandlePass();
         }
-        else if (_currentLine == _destinationLine)
-        {
-            Strike("Left the train on a station that isn't the destination or a necessary transfer, strike.");
-        }
-        else // At Świętokrzyska
+        else if (_currentStation == "Świętokrzyska")
         {
             SwitchLineButton.transform.Translate(new Vector3(0.0f, 0.035f, 0.0f));
-            if (_travelCoroutine != null)
-            {
-                StopCoroutine(_travelCoroutine);
-                _travelCoroutine = null;
-            }
+            StopAllCoroutines();
+            Stage2.SetActive(false);
+            Stage1.SetActive(true);
             Activate();
+        }
+        else
+        {
+            Strike("Left the train on a station that isn't the destination or a necessary transfer, strike.");
         }
         return false;
     }
