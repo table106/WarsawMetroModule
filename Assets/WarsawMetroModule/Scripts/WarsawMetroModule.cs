@@ -222,7 +222,7 @@ public partial class WarsawMetroModule : MonoBehaviour
                 Log($"Next station: {_currentStation}.");
                 yield return StartCoroutine(PlaySound("NastepnaStacja", Stage2.transform, 2.112f));
                 yield return StartCoroutine(PlaySound(NormalizeName(_currentStation), Stage2.transform, 1.776f));
-                _nextStationTime = Random.Range(20, 41);
+                _nextStationTime = (int)System.Math.Pow(_bombInfo.GetTime() / 60 * 25, 1/2);
             }
         }
 
